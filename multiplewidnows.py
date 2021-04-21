@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, QWidget
 from PyQt5 import QtCore
+from PyQt5.QtCore import Qt
 import sys
 
 
@@ -23,7 +24,9 @@ class AnotherWindow(QWidget):
         cb.clicked.connect(self.add_entry)
 
         #layout.addWidget(self.label)
-        self.setWindowOpacity(0.3)
+        self.setWindowFlag(Qt.FramelessWindowHint)
+        self.setGeometry(100, 100, 400, 300)
+        self.setWindowOpacity(0.5)
         self.setLayout(layout)
         
 
