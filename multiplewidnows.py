@@ -3,12 +3,23 @@ from PyQt5 import QtCore
 from PyQt5.QtCore import Qt
 import sys
 
+import pyautogui
+import threading
 
 class AnotherWindow(QWidget):
     """
     This "window" is a QWidget. If it has no parent, it
     will appear as a free-floating window as we want.
     """
+
+    def followCursor(self):
+        while True:
+            try: 
+                x,y=pyautogui.position()
+                self.move(x,y)
+            except Exception as e:
+                print(e)
+
     def add_entry(self):
         if self.windowState() & QtCore.Qt.WindowFullScreen:
             self.showNormal()
@@ -25,10 +36,12 @@ class AnotherWindow(QWidget):
 
         #layout.addWidget(self.label)
         self.setWindowFlag(Qt.FramelessWindowHint)
-        self.setGeometry(100, 100, 400, 300)
+        self.setGeometry(0, 0, 500, 500)
         self.setWindowOpacity(0.5)
         self.setLayout(layout)
         
+        t = threading.Thread(target=self.followCursor)
+        t.start()
 
 class MainWindow(QMainWindow):
     w=[0,0,0,0,0]
@@ -39,10 +52,9 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.button)
 
     def show_new_window(self, checked):
-        for i in range(2):
+        for i in range(1):
             self.w[i] = AnotherWindow()
             self.w[i].show()
-            print('showing new win')
 
 
 app = QApplication(sys.argv)

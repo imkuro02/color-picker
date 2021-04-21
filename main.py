@@ -1,48 +1,75 @@
+from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, QWidget
+from PyQt5 import QtCore
+from PyQt5.QtCore import Qt
+import sys
+import screenInfo as si
+from time import sleep
 import pyautogui
-from PIL import ImageGrab
-from pynput import mouse
 import threading
-from tkinter import *
 
-def getCords():
-    def on_move(x,y):
-        pass
-        #pyautogui.position = (x,y)
-    def on_click(x, y, button, pressed):
-        if button == mouse.Button.left:
-            print('{} at {}'.format('Pressed Left Click' if pressed else 'Released Left Click', (x, y)))
+class AnotherWindow(QWidget):
+    """
+    This "window" is a QWidget. If it has no parent, it
+    will appear as a free-floating window as we want.
+    """
+
+    def followCursor(self):
+        prev_focused_monitor = -1
+        borders=si.getBorders()
+        def refreshOverlay():
+            # on dwm hiding and unhiding moves the window to correct screen
+            self.hide()
+            #self.move(0,0)
+            self.showNormal()
+            self.showFullScreen()
+        while True:
+            sleep(0.1)
+            x,y=pyautogui.position()
+            focused_monitor=si.getFocusedMonitor(borders,x,y)
+            if focused_monitor != prev_focused_monitor:
+                prev_focused_monitor = focused_monitor
+                refreshOverlay()
+
+    def add_entry(self):
+        if self.windowState() & QtCore.Qt.WindowFullScreen:
+            self.showNormal()
         else:
-            print('{} at {}'.format('Pressed Right Click' if pressed else 'Released Right Click', (x, y)))
-            return False
+            self.showFullScreen()
+       # self.hide()
+     
+    def __init__(self):
+        super().__init__()
+        layout = QVBoxLayout()
+        self.label = QLabel("Another Window")
 
-    with mouse.Listener(on_move=on_move,on_click=on_click, suppress=False) as listener:
-        listener.join()
-    x, y = pyautogui.position()
-    return(x,y)
+        cb = QPushButton('Switch', self)
+        cb.clicked.connect(self.add_entry)
 
-def getPixel(x,y):
-    cords = (x,y,x+1,y+1)
-    box = cords 
-    pixel = ImageGrab.grab(box)
-    print(pixel.getpixel((0,0)))
+        #layout.addWidget(self.label)
+        self.setWindowFlags(Qt.WindowStaysOnTopHint)
+        self.setWindowFlag(Qt.FramelessWindowHint)
+        self.setGeometry(0, 0, 500, 500)
+        self.setWindowOpacity(0.5)
+        self.setLayout(layout)
+        
+        t = threading.Thread(target=self.followCursor)
+        t.start()
 
-def mouseLock(window,lock):
-    while True:
-        if lock:
-            x, y = window.winfo_rootx(), window.winfo_rooty()
-            pyautogui.moveTo(x,y)
+class MainWindow(QMainWindow):
+    w=[0,0,0,0,0]
+    def __init__(self):
+        super().__init__()
+        self.button = QPushButton("Push for Window")
+        self.button.clicked.connect(self.show_new_window)
+        self.setCentralWidget(self.button)
 
-window=Tk()
-btn=Button(window, text="pick col", fg='blue')
-btn.place(x=80, y=100)
-window.title('color picker')
-window.geometry("300x200+500+500")
-mouseLockThread = threading.Thread(target=mouseLock, args=(window,True,))
-mouseLockThread.start()
-window.mainloop()
-
-print('tk scuks cuck')
+    def show_new_window(self, checked):
+        for i in range(1):
+            self.w[i] = AnotherWindow()
+            self.w[i].show()
 
 
-
-
+app = QApplication(sys.argv)
+w = MainWindow()
+w.show()
+app.exec_()
