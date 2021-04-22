@@ -21,6 +21,7 @@ class AnotherWindow(QMainWindow):
         self.move(xx,yy)
         self.hide() 
         self.showFullScreen()
+        self.setWindowOpacity(0)
         #self.add_entry()
     '''
     def checkMonitor(self):
