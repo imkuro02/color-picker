@@ -1,106 +1,72 @@
-from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, QWidget, QGridLayout
-from PyQt5 import QtCore
-from PyQt5.QtCore import Qt
-import sys
-import screenInfo as si
-from time import sleep
+import tkinter as tk
 import pyautogui
-import threading
-class AnotherWindow(QMainWindow):
-    """
-    This "window" is a QWidget. If it has no parent, it
-    will appear as a free-floating window as we want.
-    """
+import PIL.ImageGrab
+from PIL import Image
+from time import sleep
 
-    def refreshOverlay(self):
-        # on dwm hiding and unhiding moves the window to correct screen
-        self.showNormal()
-        x,y=pyautogui.position()
-        # xx , yy corner cords of current focus display
-        xx, yy = si.getFocusedMonitor(self.screen_borders,x,y)
-        self.move(xx,yy)
-        self.hide() 
-        self.showFullScreen()
-        #self.add_entry()
+'''
+MULTIPLIER_X
+MULTIPLIER_Y
+
+from screeninfo import get_monitors
+for m in get_monitors():
+        print(str(m))
+'''
+
+def getPx(event):
+
+    x,y=pyautogui.position()
+    root.attributes('-alpha',0.0)
+
+    px = PIL.ImageGrab.grab(bbox=(x,y,x+1,y+1), include_layered_windows=False, all_screens=True)
+    color = (px.load()[0,0])
+
+
     '''
-    def checkMonitor(self):
-        prev_focused_monitor = -1
-        borders=si.getBorders()
-        while True:
-            sleep(.3)
-            x,y=pyautogui.position()
-            focused_monitor=si.getFocusedMonitor(borders,x,y)
-            if focused_monitor != prev_focused_monitor:
-                prev_focused_monitor = focused_monitor
-                self.refreshOverlay(x,y)
-    ''' 
+    im.save('img.gif')
+    im = Image.open('img.gif')
+    im = im.convert('RGB')
+    x,y=pyautogui.position()
+    r, g, b = im.getpixel((x,y))
+    color = (r, g, b)
     '''
-    def add_entry(self):
-        if self.windowState() & QtCore.Qt.WindowFullScreen:
-            self.showNormal()
-        else:
-            self.showFullScreen()
-       # self.hide()
-    '''  
 
-    class MouseArea(QPushButton):
-        def __init__(self, parent=None):
-            super(QPushButton, self).__init__(parent)
-            self.parent=parent
-        '''
-        def enterEvent(self,QEvent):
-            print('entered')
-        '''
-        def leaveEvent(self,QEvent):
-            self.parent.refreshOverlay()
+    '''
+    img = pyautogui.screenshot()
+    img.save('img.png')
+    i = Image.open('img.png')
+    i.show()
+    color = img.getpixel(pyautogui.position())
+    '''
 
+    root.attributes('-alpha',0.002)
+    print(color,x,y)
 
-    def __init__(self):
-        super().__init__()
-        #layout = QVBoxLayout()
-        self.screen_borders = si.getBorders()
-        layoutGrid = QGridLayout()
-        self.setLayout(layoutGrid)
-        self.label = QLabel("Another Window")
+def update():
+    x,y=pyautogui.position()
+    root.geometry(f'600x600+{x-300}+{y-300}')
+    root.after(1,update)
 
-        '''
-        cb = QPushButton('Switch', self)
-        cb.clicked.connect(self.add_entry)
-        '''
+# Create object
 
-        self.mouseArea = self.MouseArea(self)
-        #self.mouseArea.resize(2600,1500)
-        self.setCentralWidget(self.mouseArea)
-    
+root = tk.Tk()
 
-        #layout.addWidget(self.label)
-        
-        self.setGeometry(0, 0, 500, 500)
-        self.setWindowOpacity(0.1)
-        #self.setLayout(layout)
-        
-        #self.followCursor()
+root.overrideredirect(True)
 
+root.wait_visibility(root)
 
+root.configure(background='black')
 
+root.wm_attributes('-alpha',0.002)
 
-class MainWindow(QMainWindow):
-    w=[0,0,0,0,0]
-    def __init__(self):
-        super().__init__()
-        self.button = QPushButton("Push for Window")
-        self.button.clicked.connect(self.show_new_window)
-        self.setCentralWidget(self.button)
-    
-    def mouseMoveEvent(self, e):
-        self.move(e.x.e.y)
-    def show_new_window(self, checked):
-        for i in range(1):
-            self.w[i] = AnotherWindow()
-            self.w[i].show()
+root.geometry("500x500+1+1")
 
+root.attributes('-topmost', True)
 
-app = QApplication(sys.argv)
-w = MainWindow()
-w.show()
-app.exec_()
+root.bind('<Button-1>', getPx)
+
+root.config(cursor="crosshair")
+
+root.after(1, update)
+
+root.mainloop()
