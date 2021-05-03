@@ -199,7 +199,7 @@ class Main:
 
         self.overlay = Overlay(self)
 
-        self.root.geometry("200x320+1+1")
+        self.root.geometry("200x350+1+1")
         self.root.button_quit = tk.Button(
             self.root, text="X", borderwidth=0, command=self.quit
         )
@@ -241,7 +241,7 @@ class Main:
         self.root.preview_image.create_rectangle(
             0, 0, self.preview_size, self.preview_size, fill="gray"
         )
-        self.root.preview_image.pack()
+        self.root.preview_image.pack(side='bottom')
 
         self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
 
