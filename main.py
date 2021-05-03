@@ -17,6 +17,7 @@ def restrict(minval, val, maxval):
 
 class Overlay:
     def __init__(self,parent):
+        print(self,'created')
         self.parent = parent
         self.px_size = self.parent.px_size
 
@@ -154,12 +155,15 @@ class Overlay:
             self.root.after(1,self.update)
 
     def start(self):
-        self.set_active(True)
-        self.root.after(1,self.update)
+        if not self.active:
+            print('setting active true, at start')
+            self.set_active(True)
+            self.root.after(1,self.update)
 
 class Main:
     def __init__(self):
         self.root = tk.Tk()
+        self.root.attributes('-topmost', 1)
         self.root.overrideredirect(True)
         self.root.wait_visibility(self.root)
  
@@ -177,7 +181,7 @@ class Main:
 
         self.overlay = Overlay(self)
 
-        self.root.geometry("200x350+1+1")
+        self.root.geometry("200x320+1+1")
         self.root.button_quit = tk.Button(self.root,text = 'X',borderwidth=0,command=self.quit)
         self.root.button_quit.pack(side='top',anchor='ne')
 
@@ -194,8 +198,8 @@ class Main:
         self.root.label_color_rgb['command'] = lambda arg1='rgb': self.copy_color_value(arg1)
         self.root.label_color_hex['command'] = lambda arg1='hex': self.copy_color_value(arg1)
 
-        self.root.selected_color = tk.Canvas(self.root,width=self.preview_size,height=self.px_size,relief='ridge')
-        self.root.selected_color.create_rectangle(0,0,self.preview_size,self.px_size,fill='gray')
+        self.root.selected_color = tk.Canvas(self.root,width=self.preview_size,height=self.px_size,relief='ridge',bg='gray')
+        #self.root.selected_color.create_rectangle(0,0,self.preview_size,self.px_size,fill='gray')
         self.root.selected_color.pack(side='top')
 
         self.root.preview_image = tk.Canvas(self.root,width=self.preview_size,height=self.preview_size)
@@ -244,10 +248,12 @@ class Main:
         #self.root.preview_image.config(width=self.preview_size,height=self.preview_size)
         #if self.overlay.active == False:
         #    self.root.preview_image.create_rectangle(0,0,self.preview_size,self.preview_size,fill='gray')
-        self.root.selected_color.create_rectangle(0,0,self.preview_size,self.px_size,fill=f'{self.selected_color_hex}')
+        
+        #self.root.selected_color.create_rectangle(0,0,self.preview_size,self.px_size,fill=f'{self.selected_color_hex}')
+        self.root.selected_color.config(bg=f'{self.selected_color_hex}')
         self.root.label_color_rgb.config(text=f'{self.selected_color_rgb}')
         self.root.label_color_hex.config(text=f'{self.selected_color_hex}')
-        self.root.after(1,self.update)
+        self.root.after(100,self.update)
 
     def quit(self):
         self.on_closing()
