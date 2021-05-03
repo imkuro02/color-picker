@@ -120,7 +120,7 @@ class Overlay:
         # get rgb of middle pixel
         color_rgb = img.load()[middle - diff_x, middle - diff_y]
         # color translation
-        color_hex = "#{0:%02x}{1:%02x}{2:%02x}".format(*color_rgb)
+        color_hex = '#%02x%02x%02x' % (color_rgb)
         # setting color for parent
         self.parent.selected_color_rgb = color_rgb
         self.parent.selected_color_hex = color_hex
