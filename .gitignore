@@ -2,3 +2,5 @@
 /old
 /pycache
 /build
+/dist
+*.spec
