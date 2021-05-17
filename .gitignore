@@ -1,6 +1,6 @@
 /env
 /old
-/pycache
+/__pycache__
 /build
 /dist
 *.spec
