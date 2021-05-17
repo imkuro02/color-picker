@@ -62,15 +62,13 @@ class Overlay:
                 delta = 1
             if event.num == 4:
                 delta = -1
-            print(event)
 
         modifier = restrict(-1, int(delta), 1)
         self.zoom_level = restrict(1, self.zoom_level + modifier, self.ZOOM_LEVEL_MAX)
         self.screenshot_area_size = (self.zoom_level * self.ZOOM_LEVEL_MOD) + 1
-        print(self.zoom_level, self.screenshot_area_size)
 
     def set_active(self, val):
-        print(f"set active {val}")
+        #print(f"set active {val}")
         self.active = val
         if self.active:
             self.root.deiconify()
@@ -249,8 +247,17 @@ class Main:
         self.root.bind("<ButtonRelease-1>", self.stop_move)
         self.root.bind("<B1-Motion>", self.do_move)
 
+        self.root.after(1, self.center)
         self.root.after(1, self.update)
         self.root.mainloop()
+
+    def center(self):
+        x, y = pyautogui.position()
+        xmod = self.root.winfo_width()
+        ymod = self.root.winfo_height()
+        x = x - floor(xmod/2)
+        y = y - floor(ymod/2)
+        self.root.geometry(f"+{x}+{y}")
 
     def start_move(self, event):
         self.x = event.x
