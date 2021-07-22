@@ -234,11 +234,11 @@ class Main:
         self.root.button_eye_drop.pack(side="top")
 
         # color value buttons
-        self.root.label_color_rgb = tk.Button(self.root, text="@imkuro02", borderwidth=0)
+        self.root.label_color_rgb = tk.Button(self.root, text="rgb", borderwidth=0)
         self.root.label_color_rgb.pack(side="top")
-        self.root.label_color_hex = tk.Button(self.root, text="ignacy@kurowski.xyz", borderwidth=0)
+        self.root.label_color_hex = tk.Button(self.root, text="hex", borderwidth=0)
         self.root.label_color_hex.pack(side="top")
-        self.root.label_color_hsv = tk.Button(self.root, text=":D", borderwidth=0)
+        self.root.label_color_hsv = tk.Button(self.root, text="hsv", borderwidth=0)
         self.root.label_color_hsv.pack(side="top")
         self.root.label_color_rgb["command"] = lambda arg1="rgb": self.copy_color_value(
             arg1
