@@ -17,26 +17,6 @@ def restrict(minval, val, maxval):
         return maxval
     return val
 
-def rgb_to_hsv(r, g, b):
-    r, g, b = r/255.0, g/255.0, b/255.0
-    mx = max(r, g, b)
-    mn = min(r, g, b)
-    df = mx-mn
-    if mx == mn:
-        h = 0
-    elif mx == r:
-        h = (60 * ((g-b)/df) + 360) % 360
-    elif mx == g:
-        h = (60 * ((b-r)/df) + 120) % 360
-    elif mx == b:
-        h = (60 * ((r-g)/df) + 240) % 360
-    if mx == 0:
-        s = 0
-    else:
-        s = (df/mx)*100
-    v = mx*100
-    return round(h), round(s), round(v)
-
 class Overlay:
     def __init__(self, parent):
         print(self, "created")
@@ -139,11 +119,9 @@ class Overlay:
         # color translation
         color_hex = '#%02x%02x%02x' % (color_rgb)
         r,g,b=color_rgb
-        color_hsv = rgb_to_hsv(r,g,b)
         # setting color for parent
         self.parent.selected_color_rgb = color_rgb
         self.parent.selected_color_hex = color_hex
-        self.parent.selected_color_hsv = color_hsv
         # print(color_rgb,color_hex,x,y)
 
         # create a temp image and scale it
@@ -210,7 +188,6 @@ class Main:
 
         self.selected_color_hex = ""
         self.selected_color_rgb = ""
-        self.selected_color_hsv = ""
 
         self.px_size = 25
         self.preview_image_canvas_size = 9
@@ -238,17 +215,11 @@ class Main:
         self.root.label_color_rgb.pack(side="top")
         self.root.label_color_hex = tk.Button(self.root, text="hex", borderwidth=0)
         self.root.label_color_hex.pack(side="top")
-        self.root.label_color_hsv = tk.Button(self.root, text="hsv", borderwidth=0)
-        self.root.label_color_hsv.pack(side="top")
         self.root.label_color_rgb["command"] = lambda arg1="rgb": self.copy_color_value(
             arg1
         )
         
         self.root.label_color_hex["command"] = lambda arg1="hex": self.copy_color_value(
-            arg1
-        )
-
-        self.root.label_color_hsv["command"] = lambda arg1="hsv": self.copy_color_value(
             arg1
         )
 
@@ -309,8 +280,6 @@ class Main:
                 return self.selected_color_rgb
             if val_ == "hex":
                 return self.selected_color_hex
-            if val_ == "hsv":
-                return self.selected_color_hsv
 
         pyperclip.copy(str(decode(val)))
 
@@ -319,7 +288,6 @@ class Main:
             self.root.selected_color.config(bg=f"{self.selected_color_hex}")
             self.root.label_color_rgb.config(text=f"RGB {self.selected_color_rgb}")
             self.root.label_color_hex.config(text=f"HEX {self.selected_color_hex}")
-            self.root.label_color_hsv.config(text=f"HSV {self.selected_color_hsv}")
         self.root.after(100, self.update)
 
     def quit(self):
